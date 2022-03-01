@@ -1,4 +1,4 @@
-import { getEarliestInterval, readLogFile } from "./helpers";
+import { getEarliestInterval, getLatestInterval, readLogFile } from "./helpers";
 import { WorkerAvailability } from "./types";
 
 export async function solveFirstQuestion(
@@ -23,7 +23,14 @@ export async function solveSecondQuestion(
   /*
   Returns ending date/time of latest interval with a free worker.
   */
-  return "";
+  const fileContents = await readLogFile(inputFilePath);
+  const latestIntervalPerWorker = fileContents.map(
+    (workerAvailability: WorkerAvailability) => {
+      return getLatestInterval(workerAvailability.intervals);
+    }
+  );
+  const latestInterval = getLatestInterval(latestIntervalPerWorker);
+  return latestInterval.end.toISOString();
 }
 
 export async function solveThirdQuestion(
