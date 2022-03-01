@@ -1,10 +1,20 @@
+import { getEarliestInterval, readLogFile } from "./helpers";
+import { WorkerAvailability } from "./types";
+
 export async function solveFirstQuestion(
   inputFilePath: string
 ): Promise<string> {
   /*
   Returns starting date/time of earliest interval with a free worker.
   */
-  return "";
+  const fileContents = await readLogFile(inputFilePath);
+  const earliestIntervalPerWorker = fileContents.map(
+    (workerAvailability: WorkerAvailability) => {
+      return getEarliestInterval(workerAvailability.intervals);
+    }
+  );
+  const earliestInterval = getEarliestInterval(earliestIntervalPerWorker);
+  return earliestInterval.start.toISOString();
 }
 
 export async function solveSecondQuestion(
