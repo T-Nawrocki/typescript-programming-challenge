@@ -3,6 +3,7 @@ import { join } from "path";
 import {
   convertIntervalToString,
   convertStringToInterval,
+  getEarliestInterval,
   parseWorkerLogLine,
   readLogFile,
 } from "./helpers";
@@ -57,6 +58,20 @@ it("can read the contents of a text file into an array of WorkerAvailability obj
     parseWorkerLogLine("2@[2020-01-02T09:00:00.000Z/2020-01-02T10:00:00.000Z]"),
   ];
   const actualResult = await readLogFile(filePath);
+  expect(actualResult).toEqual(expectedResult);
+});
+
+it("can get the earliest interval from an array of intervals", () => {
+  const intervals = [
+    convertStringToInterval(
+      "2019-01-01T17:15:00.000+12:00/2020-01-01T08:15:00.000+02:00"
+    ),
+    convertStringToInterval(
+      "2020-01-01T19:15:00.000+08:00/2020-01-01T09:00:00.000-03:00"
+    ),
+  ];
+  const expectedResult = intervals[0];
+  const actualResult = getEarliestInterval(intervals);
   expect(actualResult).toEqual(expectedResult);
 });
 

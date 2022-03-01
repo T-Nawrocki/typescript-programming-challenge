@@ -39,6 +39,18 @@ export const readLogFile = async (
   return workerAvailabilityList;
 };
 
+export const getEarliestInterval = (intervals: Interval[]): Interval => {
+  /*
+  Takes an array of Intervals and finds the Interval with the earliest 
+  start datetime.
+  */
+  return intervals.reduce((earliest, current) => {
+    return !earliest || current.start.isBefore(earliest.start)
+      ? current
+      : earliest;
+  });
+};
+
 export const convertIntervalToString = (interval: Interval): string => {
   /*
   Takes an Interval, converts the start and end datetimes into ISO format, and 
