@@ -51,6 +51,16 @@ export const getEarliestInterval = (intervals: Interval[]): Interval => {
   });
 };
 
+export const getLatestInterval = (intervals: Interval[]): Interval => {
+  /*
+  Takes an array of Intervals and finds the Interval with the latest 
+  end datetime.
+  */
+  return intervals.reduce((latest, current) => {
+    return !latest || current.end.isAfter(latest.end) ? current : latest;
+  });
+};
+
 export const convertIntervalToString = (interval: Interval): string => {
   /*
   Takes an Interval, converts the start and end datetimes into ISO format, and 
