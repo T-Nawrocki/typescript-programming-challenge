@@ -1,6 +1,10 @@
 import dayjs from "dayjs";
 import { join } from "path";
-import { parseInterval, readLogFile } from "./helpers";
+import {
+  convertIntervalToString,
+  convertStringToInterval,
+  readLogFile,
+} from "./helpers";
 
 it("can read the contents of a text file into an array of lines", async () => {
   const filePath = join(__dirname, "../assets/input0.txt");
@@ -14,11 +18,21 @@ it("can read the contents of a text file into an array of lines", async () => {
 });
 
 it("can parse a datetime interval from a worker log string", () => {
-  const logString = "12@[2021-02-22T19:30:50Z/2021-02-28T19:30:50Z]";
+  const logString = "1@[2020-01-01T12:00:00.000Z/2020-01-02T12:00:00.000Z]";
   const expectedResult = {
-    start: dayjs("2021-02-22T19:30:50Z"),
-    end: dayjs("2021-02-28T19:30:50Z"),
+    start: dayjs("2020-01-01T12:00:00.000Z"),
+    end: dayjs("2020-01-02T12:00:00.000Z"),
   };
-  const actualResult = parseInterval(logString);
+  const actualResult = convertStringToInterval(logString);
+  expect(actualResult).toEqual(expectedResult);
+});
+
+it("can convert a datetime interval into a slash-separated string", () => {
+  const interval = {
+    start: dayjs("2020-01-01T12:00:00.000Z"),
+    end: dayjs("2020-01-02T12:00:00.000Z"),
+  };
+  const expectedResult = "2020-01-01T12:00:00.000Z/2020-01-02T12:00:00.000Z";
+  const actualResult = convertIntervalToString(interval);
   expect(actualResult).toEqual(expectedResult);
 });
