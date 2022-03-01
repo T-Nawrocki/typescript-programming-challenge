@@ -1,5 +1,15 @@
 import dayjs from "dayjs";
+import { readFile } from "fs/promises";
 import { Interval } from "./types";
+
+export const readLogFile = async (filePath: string): Promise<string[]> => {
+  /* 
+  Reads a worker log file and returns the contents as an 
+  array of strings for each line of text
+  */
+  const content = await readFile(filePath, { encoding: "utf-8" });
+  return content.split("\n");
+};
 
 export const parseInterval = (workerString: string): Interval => {
   /* 
