@@ -4,6 +4,7 @@ import {
   convertIntervalToString,
   convertStringToInterval,
   getEarliestInterval,
+  getIntervalOverlap,
   getLatestInterval,
   parseWorkerLogLine,
   readLogFile,
@@ -88,6 +89,61 @@ it("can get the latest interval from an array of intervals", () => {
   const expectedResult = intervals[1];
   const actualResult = getLatestInterval(intervals);
   expect(actualResult).toEqual(expectedResult);
+});
+
+describe("Interval Overlap", () => {
+  it("can get a new Interval representing the overlap between two Intervals", () => {
+    const interval1 = convertStringToInterval(
+      "2020-01-01T12:00:00.000Z/2020-01-02T12:00:00.000Z"
+    );
+    const interval2 = convertStringToInterval(
+      "2020-01-01T18:00:00.000Z/2020-01-02T18:00:00.000Z"
+    );
+    const expectedResult = convertStringToInterval(
+      "2020-01-01T18:00:00.000Z/2020-01-02T12:00:00.000Z"
+    );
+    const actualResult = getIntervalOverlap(interval1, interval2);
+    expect(expectedResult).toEqual(actualResult);
+  });
+
+  it("returns the inner interval, if one interval is completely contained by another", () => {
+    const interval1 = convertStringToInterval(
+      "2020-01-01T12:00:00.000Z/2020-01-12T12:00:00.000Z"
+    );
+    const interval2 = convertStringToInterval(
+      "2020-01-01T18:00:00.000Z/2020-01-02T18:00:00.000Z"
+    );
+    const expectedResult = interval2;
+    const actualResult = getIntervalOverlap(interval1, interval2);
+    expect(expectedResult).toEqual(actualResult);
+  });
+
+  it("returns null if there one Interval starts after the other ends", () => {
+    const interval1 = convertStringToInterval(
+      "2020-01-01T12:00:00.000Z/2020-01-02T12:00:00.000Z"
+    );
+    const interval2 = convertStringToInterval(
+      "2020-01-03T18:00:00.000Z/2020-01-03T18:00:00.000Z"
+    );
+    expect(getIntervalOverlap(interval1, interval2)).toBeNull();
+  });
+
+  it("returns null if there one Interval starts at the same time the other ends", () => {
+    const interval1 = convertStringToInterval(
+      "2020-01-01T12:00:00.000Z/2020-01-02T12:00:00.000Z"
+    );
+    const interval2 = convertStringToInterval(
+      "2020-01-02T12:00:00.000Z/2020-01-03T18:00:00.000Z"
+    );
+    expect(getIntervalOverlap(interval1, interval2)).toBeNull();
+  });
+
+  it("returns null if the two Intervals are the same", () => {
+    const interval = convertStringToInterval(
+      "2020-01-01T12:00:00.000Z/2020-01-02T12:00:00.000Z"
+    );
+    expect(getIntervalOverlap(interval, interval)).toBeNull();
+  });
 });
 
 it("can convert a datetime interval into a slash-separated string", () => {

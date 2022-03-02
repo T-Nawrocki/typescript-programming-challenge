@@ -61,6 +61,29 @@ export const getLatestInterval = (intervals: Interval[]): Interval => {
   });
 };
 
+export const getIntervalOverlap = (
+  interval1: Interval,
+  interval2: Interval
+): Interval | null => {
+  /*
+  Takes a pair of Intervals and determines if they have any overlap.
+  If so, returns a new Interval which covers their overlap. Else returns null.
+  */
+  const startsSecond = interval1.start.isAfter(interval2.start)
+    ? interval1
+    : interval2;
+  const endsFirst = interval1.end.isBefore(interval2.end)
+    ? interval1
+    : interval2;
+  if (
+    interval1 === interval2 ||
+    startsSecond.start.isAfter(endsFirst.end) ||
+    startsSecond.start.isSame(endsFirst.end)
+  )
+    return null;
+  return { start: startsSecond.start, end: endsFirst.end };
+};
+
 export const convertIntervalToString = (interval: Interval): string => {
   /*
   Takes an Interval, converts the start and end datetimes into ISO format, and 
