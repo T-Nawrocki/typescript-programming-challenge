@@ -12,9 +12,7 @@ import { Interval } from "./types";
 export async function solveFirstQuestion(
   inputFilePath: string
 ): Promise<string> {
-  /*
-  Returns starting date/time of earliest interval with a free worker.
-  */
+  // Returns starting date/time of earliest interval with a free worker.
   const fileContents = await readLogFile(inputFilePath);
   const allIntervals = getAllAvailableIntervals(fileContents);
   const earliestInterval = getEarliestInterval(allIntervals);
@@ -24,9 +22,7 @@ export async function solveFirstQuestion(
 export async function solveSecondQuestion(
   inputFilePath: string
 ): Promise<string> {
-  /*
-  Returns ending date/time of latest interval with a free worker.
-  */
+  // Returns ending date/time of latest interval with a free worker.
   const fileContents = await readLogFile(inputFilePath);
   const allIntervals = getAllAvailableIntervals(fileContents);
   const latestInterval = getLatestInterval(allIntervals);

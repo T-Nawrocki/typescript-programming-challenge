@@ -3,10 +3,6 @@ import { readFile } from "fs/promises";
 import { Interval, WorkerAvailability } from "./types";
 
 export const convertStringToInterval = (intervalString: string): Interval => {
-  /* 
-  Takes a slash-separated string representing a datetime interval and 
-  converts it into an Interval object with start and end datetimes.
-  */
   const startAndEnd = intervalString
     .split("/")
     .map((dateTimeString) => dayjs(dateTimeString));
@@ -14,10 +10,6 @@ export const convertStringToInterval = (intervalString: string): Interval => {
 };
 
 export const parseWorkerLogLine = (line: string): WorkerAvailability => {
-  /*
-  Parses a line from a worker log into a WorkerAvailability object, with
-  a worker id and an array of Intervals at which the worker is available.
-  */
   const id = parseInt(line.substring(0, line.indexOf("@")));
   const intervals = line
     .substring(line.indexOf("[") + 1, line.indexOf("]"))
@@ -29,10 +21,6 @@ export const parseWorkerLogLine = (line: string): WorkerAvailability => {
 export const readLogFile = async (
   filePath: string
 ): Promise<WorkerAvailability[]> => {
-  /* 
-  Reads a worker log file and returns the contents as a Promise of an array of
-  WorkerAvailability objects.
-  */
   const content = await readFile(filePath, { encoding: "utf-8" });
   const lines = content.split("\n");
   const workerAvailabilityList = lines.map((line) => parseWorkerLogLine(line));
@@ -48,10 +36,7 @@ export const getAllAvailableIntervals = (
 };
 
 export const getEarliestInterval = (intervals: Interval[]): Interval => {
-  /*
-  Takes an array of Intervals and finds the Interval with the earliest 
-  start datetime.
-  */
+  // Gets the earliest interval in an array by start datetime
   return intervals.reduce((earliest, current) => {
     return !earliest || current.start.isBefore(earliest.start)
       ? current
@@ -60,10 +45,7 @@ export const getEarliestInterval = (intervals: Interval[]): Interval => {
 };
 
 export const getLatestInterval = (intervals: Interval[]): Interval => {
-  /*
-  Takes an array of Intervals and finds the Interval with the latest 
-  end datetime.
-  */
+  // Gets the latest interval in an array by end datetime
   return intervals.reduce((latest, current) => {
     return !latest || current.end.isAfter(latest.end) ? current : latest;
   });
