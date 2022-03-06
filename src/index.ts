@@ -1,4 +1,9 @@
-import { getEarliestInterval, getLatestInterval, readLogFile } from "./helpers";
+import {
+  getAllAvailableIntervals,
+  getEarliestInterval,
+  getLatestInterval,
+  readLogFile,
+} from "./helpers";
 import { WorkerAvailability } from "./types";
 
 export async function solveFirstQuestion(
@@ -8,12 +13,8 @@ export async function solveFirstQuestion(
   Returns starting date/time of earliest interval with a free worker.
   */
   const fileContents = await readLogFile(inputFilePath);
-  const earliestIntervalPerWorker = fileContents.map(
-    (workerAvailability: WorkerAvailability) => {
-      return getEarliestInterval(workerAvailability.intervals);
-    }
-  );
-  const earliestInterval = getEarliestInterval(earliestIntervalPerWorker);
+  const allIntervals = getAllAvailableIntervals(fileContents);
+  const earliestInterval = getEarliestInterval(allIntervals);
   return earliestInterval.start.toISOString();
 }
 
@@ -24,12 +25,8 @@ export async function solveSecondQuestion(
   Returns ending date/time of latest interval with a free worker.
   */
   const fileContents = await readLogFile(inputFilePath);
-  const latestIntervalPerWorker = fileContents.map(
-    (workerAvailability: WorkerAvailability) => {
-      return getLatestInterval(workerAvailability.intervals);
-    }
-  );
-  const latestInterval = getLatestInterval(latestIntervalPerWorker);
+  const allIntervals = getAllAvailableIntervals(fileContents);
+  const latestInterval = getLatestInterval(allIntervals);
   return latestInterval.end.toISOString();
 }
 

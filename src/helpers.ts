@@ -39,6 +39,14 @@ export const readLogFile = async (
   return workerAvailabilityList;
 };
 
+export const getAllAvailableIntervals = (
+  workerAvailabilities: WorkerAvailability[]
+): Interval[] => {
+  return workerAvailabilities
+    .map((workerAvailability) => workerAvailability.intervals)
+    .flat();
+};
+
 export const getEarliestInterval = (intervals: Interval[]): Interval => {
   /*
   Takes an array of Intervals and finds the Interval with the earliest 

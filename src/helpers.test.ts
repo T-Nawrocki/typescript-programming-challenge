@@ -3,6 +3,7 @@ import { join } from "path";
 import {
   convertIntervalToString,
   convertStringToInterval,
+  getAllAvailableIntervals,
   getEarliestInterval,
   getIntervalOverlap,
   getLatestInterval,
@@ -61,6 +62,28 @@ it("can read the contents of a text file into an array of WorkerAvailability obj
     parseWorkerLogLine("2@[2020-01-02T09:00:00.000Z/2020-01-02T10:00:00.000Z]"),
   ];
   const actualResult = await readLogFile(filePath);
+  expect(actualResult).toEqual(expectedResult);
+});
+
+it("can get a flat array of Intervals from a list of WorkerAvailabilities", () => {
+  const workerAvailabilities = [
+    parseWorkerLogLine(
+      "1@[2020-01-01T12:00:00.000Z/2020-01-02T12:00:00.000Z,2020-01-01T18:00:00.000Z/2020-01-01T19:00:00.000Z]"
+    ),
+    parseWorkerLogLine("2@[2020-01-02T09:00:00.000Z/2020-01-02T10:00:00.000Z]"),
+  ];
+  const expectedResult = [
+    convertStringToInterval(
+      "2020-01-01T12:00:00.000Z/2020-01-02T12:00:00.000Z"
+    ),
+    convertStringToInterval(
+      "2020-01-01T18:00:00.000Z/2020-01-01T19:00:00.000Z"
+    ),
+    convertStringToInterval(
+      "2020-01-02T09:00:00.000Z/2020-01-02T10:00:00.000Z"
+    ),
+  ];
+  const actualResult = getAllAvailableIntervals(workerAvailabilities);
   expect(actualResult).toEqual(expectedResult);
 });
 
