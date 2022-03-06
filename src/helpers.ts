@@ -84,11 +84,37 @@ export const getIntervalOverlap = (
   return { start: startsSecond.start, end: endsFirst.end };
 };
 
-export const convertIntervalToString = (interval: Interval): string => {
+export const mergeIntervals = (intervals: Interval[]): Interval[] => {
   /*
-  Takes an Interval, converts the start and end datetimes into ISO format, and 
-  then returns them as a single slash-separated string
+  Takes an array of intervals, sorts it into ascending order and then merges 
+  any overlapping intervals together, returning the array of merged intervals.
   */
+  if (intervals.length === 0) return []; // none to merge, none to return
+
+  const sorted = intervals.sort((a, b) => (b.start.isBefore(a.start) ? 1 : -1));
+  const results: Interval[] = [];
+
+  let currentResult = sorted[0];
+  for (let newInterval of sorted) {
+    if (
+      newInterval.start.isSame(currentResult.end) ||
+      newInterval.start.isBefore(currentResult.end)
+    )
+      // Overlap or bordering, so continue building currentResult
+      currentResult.end = getLatestInterval([newInterval, currentResult]).end;
+    else {
+      // No overlap, so currentResult is finished and can be pushed to results
+      results.push(currentResult);
+      currentResult = newInterval;
+    }
+  }
+  // Push the last currentResult into results
+  results.push(currentResult);
+
+  return results;
+};
+
+export const convertIntervalToString = (interval: Interval): string => {
   const startString = interval.start.toISOString();
   const endString = interval.end.toISOString();
   return `${startString}/${endString}`;

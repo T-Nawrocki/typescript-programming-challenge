@@ -6,6 +6,7 @@ import {
   getEarliestInterval,
   getIntervalOverlap,
   getLatestInterval,
+  mergeIntervals,
   parseWorkerLogLine,
   readLogFile,
 } from "./helpers";
@@ -143,6 +144,62 @@ describe("Interval Overlap", () => {
       "2020-01-01T12:00:00.000Z/2020-01-02T12:00:00.000Z"
     );
     expect(getIntervalOverlap(interval, interval)).toBeNull();
+  });
+});
+
+describe("mergeIntervals", () => {
+  it("returns an empty array if there are no intervals to merge", () => {
+    expect(mergeIntervals([])).toEqual([]);
+  });
+
+  it("can merge overlapping intervals together", () => {
+    const intervals = [
+      convertStringToInterval(
+        "2020-01-01T12:00:00.000Z/2020-01-01T18:00:00.000Z"
+      ),
+      convertStringToInterval(
+        "2020-01-01T15:15:00.000Z/2020-01-01T20:00:00.000Z"
+      ),
+    ];
+    const expectedResult = [
+      convertStringToInterval(
+        "2020-01-01T12:00:00.000Z/2020-01-01T20:00:00.000Z"
+      ),
+    ];
+    const actualResult = mergeIntervals(intervals);
+    expect(actualResult).toEqual(expectedResult);
+  });
+
+  it("can merge adjacent intervals together", () => {
+    const intervals = [
+      convertStringToInterval(
+        "2020-01-01T12:00:00.000Z/2020-01-01T18:00:00.000Z"
+      ),
+      convertStringToInterval(
+        "2020-01-01T18:00:00.000Z/2020-01-01T20:00:00.000Z"
+      ),
+    ];
+    const expectedResult = [
+      convertStringToInterval(
+        "2020-01-01T12:00:00.000Z/2020-01-01T20:00:00.000Z"
+      ),
+    ];
+    const actualResult = mergeIntervals(intervals);
+    expect(actualResult).toEqual(expectedResult);
+  });
+
+  it("will not merge non-overlapping or adjacent intervals", () => {
+    const intervals = [
+      convertStringToInterval(
+        "2020-01-01T12:00:00.000Z/2020-01-01T18:00:00.000Z"
+      ),
+      convertStringToInterval(
+        "2020-01-01T20:00:00.000Z/2020-01-01T23:00:00.000Z"
+      ),
+    ];
+    const expectedResult = intervals;
+    const actualResult = mergeIntervals(intervals);
+    expect(actualResult).toEqual(expectedResult);
   });
 });
 
