@@ -1,10 +1,13 @@
 import {
+  convertIntervalToString,
   getAllAvailableIntervals,
   getEarliestInterval,
+  getIntervalOverlap,
   getLatestInterval,
+  mergeIntervals,
   readLogFile,
 } from "./helpers";
-import { WorkerAvailability } from "./types";
+import { Interval } from "./types";
 
 export async function solveFirstQuestion(
   inputFilePath: string
@@ -38,5 +41,17 @@ export async function solveThirdQuestion(
   Results are in ascending order (earliest to latest interval).
   Overlapping intervals in results are merged into a single interval.
   */
-  return [];
+  const fileContents = await readLogFile(inputFilePath);
+  const allIntervals = getAllAvailableIntervals(fileContents);
+
+  const overlaps: Interval[] = [];
+  allIntervals.forEach((interval) =>
+    allIntervals.forEach((otherInterval) => {
+      const overlap = getIntervalOverlap(interval, otherInterval);
+      if (overlap !== null) overlaps.push(overlap);
+    })
+  );
+
+  const results = mergeIntervals(overlaps);
+  return results.map((interval) => convertIntervalToString(interval));
 }
